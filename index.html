@@ -94,10 +94,8 @@
       flex-wrap: wrap;
     }
 
-    .heartBtn{
-      width: 210px;
-      max-width: 100%;
-      height: 56px;
+    /* ===== КНОПКА-КАРТИНКА (универсальная) ===== */
+    .imgBtn{
       border: none;
       background: transparent;
       padding: 0;
@@ -107,29 +105,29 @@
       position: relative;
       box-shadow: 0 8px 22px rgba(0,0,0,.35);
       transition: transform .08s ease;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
-    .heartBtn:active{ transform: scale(.98); }
-    .heartBtn img{
+    .imgBtn:active{ transform: scale(.98); }
+    .imgBtn img{
       width: 100%;
       height: 100%;
       object-fit: contain;
       display:block;
       filter: drop-shadow(0 10px 22px rgba(0,0,0,.35));
+      pointer-events: none;
+      user-select: none;
     }
 
-    .smallBtn{
-      border: 1px solid rgba(255,255,255,.22);
-      background: rgba(0,0,0,.22);
-      color:#fff;
+    /* Сердечко (рассчитать) */
+    .heartBtn{
+      width: 210px;
+      max-width: 100%;
+      height: 56px;
       border-radius: 14px;
-      padding: 12px 14px;
-      cursor:pointer;
-      font-weight: 650;
-      transition: transform .08s ease, background .2s ease;
     }
-    .smallBtn:active{ transform: scale(.98); }
-    .smallBtn:hover{ background: rgba(255,255,255,.08); }
 
+    /* Result */
     .result{
       margin-top: 12px;
       padding: 14px;
@@ -196,19 +194,13 @@
       display:flex;
       gap: 10px;
     }
-    .modal .buy, .modal .nope{
+
+    /* Кнопки в premium popup как картинки */
+    .modalBtn{
       flex: 1;
-      border: none;
+      height: 56px;     /* подгони если нужно */
       border-radius: 16px;
-      padding: 14px 12px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 10px 24px rgba(0,0,0,.35);
-      transition: transform .08s ease;
     }
-    .modal .buy{ background: rgba(255, 70, 120, .92); color: #fff; }
-    .modal .nope{ background: rgba(255,255,255,.90); color: #111; }
-    .modal .buy:active, .modal .nope:active{ transform: scale(.98); }
 
     .badge{
       display:inline-flex;
@@ -243,12 +235,18 @@
       </div>
 
       <div class="actions">
-        <button class="heartBtn" id="calcBtn" aria-label="Рассчитать совместимость">
-          <img src="knopka.png" alt="Кнопка-сердечко" />
+        <!-- knopka1.png -->
+        <button class="imgBtn heartBtn" id="calcBtn" aria-label="Рассчитать совместимость">
+          <img src="knopka1.png" alt="Сердечко" />
         </button>
 
-        <button class="smallBtn" id="premiumBtn">⭐ Premium</button>
-        <button class="smallBtn" id="resetBtn">Сброс</button>
+        <button class="imgBtn" id="premiumBtn" style="width:130px;height:56px" aria-label="Открыть Premium">
+          <img src="knopka2.png" alt="Premium" />
+        </button>
+
+        <button class="imgBtn" id="resetBtn" style="width:130px;height:56px" aria-label="Сброс">
+          <img src="knopka3.png" alt="Сброс" />
+        </button>
       </div>
 
       <div class="result" id="resultBox" aria-live="polite">
@@ -259,7 +257,9 @@
         </div>
       </div>
 
-      <div class="hint">Файлы в репозитории: <b>fon1.png</b>, <b>premium.png</b>, <b>knopka.png</b>, <b>index.html</b></div>
+      <div class="hint">
+        Файлы: <b>fon1.png</b>, <b>premium.png</b>, <b>knopka1.png</b>, <b>knopka2.png</b>, <b>knopka3.png</b>, <b>index.html</b>
+      </div>
     </section>
   </main>
 
@@ -267,28 +267,32 @@
   <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Premium предложение">
     <div class="modal">
       <img class="premiumImg" src="premium.png" alt="Premium" />
+
       <div class="btnRow">
-        <button class="buy" id="buyBtn">Купить</button>
-        <button class="nope" id="nopeBtn">Отказаться</button>
+        <!-- knopka2.png = Купить -->
+        <button class="imgBtn modalBtn" id="buyBtn" aria-label="Купить">
+          <img src="knopka2.png" alt="Купить" />
+        </button>
+
+        <!-- knopka3.png = Отказаться -->
+        <button class="imgBtn modalBtn" id="nopeBtn" aria-label="Отказаться">
+          <img src="knopka3.png" alt="Отказаться" />
+        </button>
       </div>
     </div>
   </div>
 
   <script>
-    // --- Helpers ---
     function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
-    // Детерминированный "рандом" от двух имён, чтобы результат был стабильным для одной пары.
     function seededPercent(a, b){
       const s = (a + "|" + b).toLowerCase().trim();
-      let h = 2166136261; // FNV-1a
+      let h = 2166136261;
       for (let i = 0; i < s.length; i++){
         h ^= s.charCodeAt(i);
         h = Math.imul(h, 16777619);
       }
-      // Приведём к 0..99
       const v = Math.abs(h) % 100;
-      // Чуть поднимем "середину", чтобы чаще были приятные цифры :)
       const boosted = Math.round((v * 0.72) + 18);
       return clamp(boosted, 1, 99);
     }
@@ -308,7 +312,6 @@
       return "Premium: сначала стабилизируй общение — короткий тёплый контакт каждый день сильнее редких длинных переписок.";
     }
 
-    // --- UI ---
     const name1 = document.getElementById("name1");
     const name2 = document.getElementById("name2");
     const percentEl = document.getElementById("percent");
@@ -327,7 +330,6 @@
 
     function openPremium(){
       overlay.classList.add("show");
-      // Блокируем прокрутку под модалкой
       document.body.style.overflow = "hidden";
     }
     function closePremium(){
@@ -351,25 +353,17 @@
       percentEl.textContent = p + "%";
       msgEl.textContent = pickMessage(p);
 
-      // Показываем бейдж, но премиум-строку только если купили
+      badge.style.display = "inline-flex";
+
       if (premiumUnlocked){
-        badge.style.display = "inline-flex";
         msgEl.textContent += " " + pickPremiumLine(p);
       } else {
-        badge.style.display = "inline-flex";
-      }
-
-      // Мягкий paywall: после первого гадания показываем popup
-      // (можешь убрать этот блок, если не нужен)
-      if (!premiumUnlocked){
-        // показываем не каждый раз, а примерно 1 раз из 2
         const coin = (Date.now() % 2 === 0);
         if (coin) openPremium();
       }
     }
 
     calcBtn.addEventListener("click", showResult);
-
     premiumBtn.addEventListener("click", () => openPremium());
 
     resetBtn.addEventListener("click", () => {
@@ -381,12 +375,10 @@
       badge.style.display = "none";
     });
 
-    // Закрыть по клику по затемнению
     overlay.addEventListener("click", (e) => {
       if (e.target === overlay) closePremium();
     });
 
-    // "Купить" — здесь пока просто включаем премиум-режим (без оплаты)
     buyBtn.addEventListener("click", () => {
       premiumUnlocked = true;
       closePremium();
@@ -395,12 +387,12 @@
         badge.style.display = "inline-flex";
       } else {
         msgEl.textContent = "Premium активирован ✅ Сделай гадание — появится расширенный прогноз.";
+        badge.style.display = "inline-flex";
       }
     });
 
     nopeBtn.addEventListener("click", () => closePremium());
 
-    // Enter в поле = гадание
     [name1, name2].forEach(el => el.addEventListener("keydown", (e) => {
       if (e.key === "Enter") showResult();
     }));

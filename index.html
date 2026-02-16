@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Гадание на любовь</title>
+  <style>
+    :root{
+      --glass: rgba(0,0,0,.45);
+      --txt: #fff;
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius: 22px;
+    }
+
+    *{ box-sizing: border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--txt);
+      background: #000 url("fon1.png") center/cover no-repeat fixed;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 16px;
+      overflow-x:hidden;
+    }
+
+    .app{
+      width: min(520px, 100%);
+      background: var(--glass);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 18px;
+      position: relative;
+    }
+
+    .title{
+      font-size: 22px;
+      font-weight: 800;
+      margin: 0 0 6px 0;
+      letter-spacing: .2px;
+    }
+    .subtitle{
+      margin: 0 0 14px 0;
+      opacity: .9;
+      line-height: 1.35;
+      font-size: 14px;
+    }
+
+    .card{
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    label{
+      font-size: 12px;
+      opacity: .9;
+      display:block;
+      margin: 0 0 6px 2px;
+    }
+
+    input{
+      width:100%;
+      padding: 13px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(0,0,0,.28);
+      color: #fff;
+      outline: none;
+      font-size: 15px;
+    }
+    input::placeholder{ color: rgba(255,255,255,.55); }
+    input:focus{ border-color: rgba(255,255,255,.35); }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      justify-content: space-between;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .heartBtn{
+      width: 210px;
+      max-width: 100%;
+      height: 56px;
+      border: none;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+      border-radius: 14px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 8px 22px rgba(0,0,0,.35);
+      transition: transform .08s ease;
+    }
+    .heartBtn:active{ transform: scale(.98); }
+    .heartBtn img{
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display:block;
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,.35));
+    }
+
+    .smallBtn{
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(0,0,0,.22);
+      color:#fff;
+      border-radius: 14px;
+      padding: 12px 14px;
+      cursor:pointer;
+      font-weight: 650;
+      transition: transform .08s ease, background .2s ease;
+    }
+    .smallBtn:active{ transform: scale(.98); }
+    .smallBtn:hover{ background: rgba(255,255,255,.08); }
+
+    .result{
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(0,0,0,.25);
+      border: 1px solid rgba(255,255,255,.12);
+      min-height: 86px;
+    }
+
+    .percent{
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1;
+      margin: 0 0 6px 0;
+      letter-spacing: .5px;
+    }
+    .text{
+      margin:0;
+      opacity: .95;
+      line-height: 1.35;
+      font-size: 14px;
+    }
+
+    .hint{
+      margin-top: 10px;
+      font-size: 12px;
+      opacity: .78;
+    }
+
+    /* Premium modal */
+    .overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.62);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 999;
+    }
+    .overlay.show{ display:flex; }
+
+    .modal{
+      width: min(520px, 100%);
+      position: relative;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 22px 70px rgba(0,0,0,.65);
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.25);
+    }
+    .modal .premiumImg{
+      width: 100%;
+      height: auto;
+      display:block;
+      user-select:none;
+      pointer-events:none;
+    }
+    .modal .btnRow{
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      display:flex;
+      gap: 10px;
+    }
+    .modal .buy, .modal .nope{
+      flex: 1;
+      border: none;
+      border-radius: 16px;
+      padding: 14px 12px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(0,0,0,.35);
+      transition: transform .08s ease;
+    }
+    .modal .buy{ background: rgba(255, 70, 120, .92); color: #fff; }
+    .modal .nope{ background: rgba(255,255,255,.90); color: #111; }
+    .modal .buy:active, .modal .nope:active{ transform: scale(.98); }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      font-size: 12px;
+      opacity: .9;
+      margin-top: 10px;
+    }
+    .dot{
+      width: 8px; height: 8px; border-radius: 99px;
+      background: rgba(255, 70, 120, .95);
+      box-shadow: 0 0 18px rgba(255, 70, 120, .9);
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <h1 class="title">💘 Гадание на любовь</h1>
+    <p class="subtitle">Введи два имени и нажми на сердечко — покажу совместимость и короткий прогноз.</p>
+
+    <section class="card">
+      <div class="row">
+        <div>
+          <label for="name1">Твоё имя</label>
+          <input id="name1" placeholder="Например: Аня" autocomplete="off" />
+        </div>
+        <div>
+          <label for="name2">Имя партнёра</label>
+          <input id="name2" placeholder="Например: Дима" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="heartBtn" id="calcBtn" aria-label="Рассчитать совместимость">
+          <img src="knopka.png" alt="Кнопка-сердечко" />
+        </button>
+
+        <button class="smallBtn" id="premiumBtn">⭐ Premium</button>
+        <button class="smallBtn" id="resetBtn">Сброс</button>
+      </div>
+
+      <div class="result" id="resultBox" aria-live="polite">
+        <p class="percent" id="percent">—%</p>
+        <p class="text" id="message">Введи имена и нажми сердечко.</p>
+        <div class="badge" id="badge" style="display:none;">
+          <span class="dot"></span><span>Premium прогноз доступен</span>
+        </div>
+      </div>
+
+      <div class="hint">Файлы в репозитории: <b>fon1.png</b>, <b>premium.png</b>, <b>knopka.png</b>, <b>index.html</b></div>
+    </section>
+  </main>
+
+  <!-- Premium popup -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Premium предложение">
+    <div class="modal">
+      <img class="premiumImg" src="premium.png" alt="Premium" />
+      <div class="btnRow">
+        <button class="buy" id="buyBtn">Купить</button>
+        <button class="nope" id="nopeBtn">Отказаться</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Helpers ---
+    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+    // Детерминированный "рандом" от двух имён, чтобы результат был стабильным для одной пары.
+    function seededPercent(a, b){
+      const s = (a + "|" + b).toLowerCase().trim();
+      let h = 2166136261; // FNV-1a
+      for (let i = 0; i < s.length; i++){
+        h ^= s.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      // Приведём к 0..99
+      const v = Math.abs(h) % 100;
+      // Чуть поднимем "середину", чтобы чаще были приятные цифры :)
+      const boosted = Math.round((v * 0.72) + 18);
+      return clamp(boosted, 1, 99);
+    }
+
+    function pickMessage(p){
+      if (p >= 90) return "Это очень сильное притяжение. Главное — не играть в молчанку и чаще говорить прямо.";
+      if (p >= 75) return "Отличная совместимость! У вас легко получается поддерживать друг друга и быстро мириться.";
+      if (p >= 60) return "Хороший союз. Если добавите больше внимания и времени вдвоём — станет ещё лучше.";
+      if (p >= 45) return "Есть химия, но важны договорённости. Не копите обиды — говорите сразу.";
+      if (p >= 30) return "Не всё идеально, но шанс есть. Сработает, если будет уважение и терпение.";
+      return "Сложная история. Можно попробовать, но стоит честно обсудить ожидания и границы.";
+    }
+
+    function pickPremiumLine(p){
+      if (p >= 80) return "Premium: ближайшие 7 дней — идеальное окно, чтобы сделать шаг навстречу (приглашение/свидание).";
+      if (p >= 55) return "Premium: внимание на мелочи — комплимент и инициатива дадут лучший эффект, чем разговоры о проблемах.";
+      return "Premium: сначала стабилизируй общение — короткий тёплый контакт каждый день сильнее редких длинных переписок.";
+    }
+
+    // --- UI ---
+    const name1 = document.getElementById("name1");
+    const name2 = document.getElementById("name2");
+    const percentEl = document.getElementById("percent");
+    const msgEl = document.getElementById("message");
+    const badge = document.getElementById("badge");
+
+    const overlay = document.getElementById("overlay");
+    const calcBtn = document.getElementById("calcBtn");
+    const premiumBtn = document.getElementById("premiumBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const buyBtn = document.getElementById("buyBtn");
+    const nopeBtn = document.getElementById("nopeBtn");
+
+    let lastPercent = null;
+    let premiumUnlocked = false;
+
+    function openPremium(){
+      overlay.classList.add("show");
+      // Блокируем прокрутку под модалкой
+      document.body.style.overflow = "hidden";
+    }
+    function closePremium(){
+      overlay.classList.remove("show");
+      document.body.style.overflow = "";
+    }
+
+    function showResult(){
+      const a = name1.value.trim();
+      const b = name2.value.trim();
+      if (!a || !b){
+        percentEl.textContent = "—%";
+        msgEl.textContent = "Нужно ввести оба имени 🙂";
+        badge.style.display = "none";
+        return;
+      }
+
+      const p = seededPercent(a, b);
+      lastPercent = p;
+
+      percentEl.textContent = p + "%";
+      msgEl.textContent = pickMessage(p);
+
+      // Показываем бейдж, но премиум-строку только если купили
+      if (premiumUnlocked){
+        badge.style.display = "inline-flex";
+        msgEl.textContent += " " + pickPremiumLine(p);
+      } else {
+        badge.style.display = "inline-flex";
+      }
+
+      // Мягкий paywall: после первого гадания показываем popup
+      // (можешь убрать этот блок, если не нужен)
+      if (!premiumUnlocked){
+        // показываем не каждый раз, а примерно 1 раз из 2
+        const coin = (Date.now() % 2 === 0);
+        if (coin) openPremium();
+      }
+    }
+
+    calcBtn.addEventListener("click", showResult);
+
+    premiumBtn.addEventListener("click", () => openPremium());
+
+    resetBtn.addEventListener("click", () => {
+      name1.value = "";
+      name2.value = "";
+      lastPercent = null;
+      percentEl.textContent = "—%";
+      msgEl.textContent = "Введи имена и нажми сердечко.";
+      badge.style.display = "none";
+    });
+
+    // Закрыть по клику по затемнению
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closePremium();
+    });
+
+    // "Купить" — здесь пока просто включаем премиум-режим (без оплаты)
+    buyBtn.addEventListener("click", () => {
+      premiumUnlocked = true;
+      closePremium();
+      if (lastPercent !== null){
+        msgEl.textContent = pickMessage(lastPercent) + " " + pickPremiumLine(lastPercent);
+        badge.style.display = "inline-flex";
+      } else {
+        msgEl.textContent = "Premium активирован ✅ Сделай гадание — появится расширенный прогноз.";
+      }
+    });
+
+    nopeBtn.addEventListener("click", () => closePremium());
+
+    // Enter в поле = гадание
+    [name1, name2].forEach(el => el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") showResult();
+    }));
+  </script>
+</body>
+</html>
